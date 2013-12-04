@@ -1,3 +1,3 @@
 #!/bin/sh -
 
-go build ../stencil ../stencil/file #../stencil/gae
+go build ../stencils ../stencils/file #../stencils/gae

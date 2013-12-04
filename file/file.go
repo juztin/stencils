@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"bitbucket.org/juztin/stencil"
+	"bitbucket.org/juztin/stencils"
 )
 
 type file struct {
@@ -16,17 +16,17 @@ type file struct {
 	name string
 }
 
-func New(path string) stencil.StencilFn {
-	return func(name string) *stencil.Stencil {
+func New(path string) stencils.StencilFn {
+	return func(name string) *stencils.Stencil {
 		p := filepath.Join(path, name)
-		return stencil.New(name, &file{p, name})
+		return stencils.NewStencil(name, &file{p, name})
 	}
 }
 
-func (f *file) Read(r stencil.Requestor) ([]byte, error) {
+func (f *file) Read(r stencils.Requestor) ([]byte, error) {
 	return ioutil.ReadFile(f.path)
 }
 
-func (f *file) Save(r stencil.Requestor, data []byte) error {
+func (f *file) Save(r stencils.Requestor, data []byte) error {
 	return ioutil.WriteFile(f.path, data, 0600)
 }

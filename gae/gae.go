@@ -12,24 +12,24 @@ import (
 
 	"appengine"
 	"appengine/datastore"
-	"bitbucket.org/juztin/stencil"
+	"bitbucket.org/juztin/stencils"
 )
 
 type gae struct {
 	collection, name string
 }
 
-func New(collection string) stencil.StencilFn {
-	return func(name string) *stencil.Stencil {
-		return stencil.New(name, &gae{collection, name})
+func New(collection string) stencils.StencilFn {
+	return func(name string) *stencils.Stencil {
+		return stencils.NewStencil(name, &gae{collection, name})
 	}
 }
 
-func (g *gae) Read(r stencil.Requestor) ([]byte, error) {
+func (g *gae) Read(r stencils.Requestor) ([]byte, error) {
 	return ioutil.ReadFile(g.name)
 }
 
-func (g *gae) Save(r stencil.Requestor, data []byte) error {
+func (g *gae) Save(r stencils.Requestor, data []byte) error {
 	c := appengine.NewContext(req)
 	k := datastore.NewKey(c, g.collection, g.name, 0, nil)
 

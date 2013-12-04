@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package stencil
+package stencils
 
 import (
 	"errors"
@@ -44,7 +44,7 @@ type Stencil struct {
 	store    ReaderSaver
 }
 
-func New(name string, rs ReaderSaver) *Stencil {
+func NewStencil(name string, rs ReaderSaver) *Stencil {
 	s := new(Stencil)
 	s.name = name
 	s.store = rs

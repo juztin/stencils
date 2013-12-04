@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package stencil
+package stencils
 
 import (
 	"bytes"
@@ -18,7 +18,7 @@ type Stencils struct {
 
 type StencilFn func(name string) *Stencil
 
-func NewStencils(fn StencilFn) *Stencils {
+func New(fn StencilFn) *Stencils {
 	c := new(Stencils)
 	c.col = make(map[string]*Stencil)
 	c.create = fn

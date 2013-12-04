@@ -1,4 +1,4 @@
 #!/bin/sh -
 
-go install bitbucket.org/juztin/stencil
-go install bitbucket.org/juztin/stencil/file
+go install bitbucket.org/juztin/stencils
+go install bitbucket.org/juztin/stencils/file
