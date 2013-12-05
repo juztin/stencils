@@ -41,15 +41,16 @@ type Stencil struct {
 	children []*Stencil
 	isStale  bool
 	name     string
+	text     string
 	store    ReaderSaver
 }
 
 func NewStencil(name string, rs ReaderSaver) *Stencil {
-	s := new(Stencil)
-	s.name = name
-	s.store = rs
-	s.isStale = true
-	return s
+	return &Stencil{
+		name:    name,
+		store:   rs,
+		isStale: true,
+	}
 }
 
 func fmtErr(format string, fields ...interface{}) error {
@@ -82,25 +83,24 @@ func (s *Stencil) Load(r Requestor) (*Stencil, error) {
 		return s.base.Load(r)
 	}
 
+	// Get template text
 	b, err := s.store.Read(r)
 	if err != nil {
 		return s, err
 	}
 
+	// Store text, create template
+	s.text = string(b)
 	t := template.New(s.name)
-	// Load base template
-	if s.base != nil {
-		if t, err = t.Parse(s.base.Root.String()); err != nil {
-			return s, err
-		}
-	}
-	// Load this template
-	if t, err = t.Parse(string(b)); err != nil {
+
+	// Load full templates (traverse parents)
+	if t, err = t.Parse(data(s)); err != nil {
 		return s, err
 	}
 	s.Template = t
 	s.isStale = false
 
+	// Load children
 	return s, Reload(r, s.children...)
 }
 
@@ -111,4 +111,11 @@ func Reload(r Requestor, children ...*Stencil) (err error) {
 		}
 	}
 	return
+}
+
+func data(s *Stencil) string {
+	if s.base != nil {
+		return s.text + data(s.base)
+	}
+	return s.text
 }
