@@ -36,10 +36,10 @@ func (c *Stencils) Add(s *Stencil) *Stencils {
 	return c
 }
 
-func (c *Stencils) Etch(n string, r Requestor, wr io.Writer, data interface{}) error {
+func (c *Stencils) Etch(n string, wr io.Writer, r Requestor, data interface{}) error {
 	if s, ok := c.Name(n); ok {
 		var buf bytes.Buffer
-		if err := s.Etch(r, &buf, data); err != nil {
+		if err := s.Etch(&buf, r, data); err != nil {
 			return writeErr(c.FiveOh, r, wr, data, err)
 		}
 		_, err := buf.WriteTo(wr)
@@ -62,7 +62,7 @@ func (c *Stencils) Remove(n string) (ok bool) {
 
 func writeErr(s *Stencil, r Requestor, wr io.Writer, data interface{}, err error) error {
 	if s != nil {
-		if e := s.Etch(r, wr, data); e != nil {
+		if e := s.Etch(wr, r, data); e != nil {
 			err = fmtErr("Stencil: %s : %s", err, e)
 		}
 	}

@@ -7,8 +7,8 @@ package stencils
 import (
 	"errors"
 	"fmt"
+	"html/template"
 	"io"
-	"text/template"
 
 	"net/http"
 )
@@ -57,7 +57,7 @@ func fmtErr(format string, fields ...interface{}) error {
 	return errors.New(fmt.Sprintf(format, fields...))
 }
 
-func (s *Stencil) Etch(r Requestor, wr io.Writer, data interface{}) error {
+func (s *Stencil) Etch(wr io.Writer, r Requestor, data interface{}) error {
 	if s.isStale {
 		if _, err := s.Load(r); err != nil {
 			return err
