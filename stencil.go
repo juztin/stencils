@@ -13,16 +13,12 @@ import (
 	"net/http"
 )
 
-type Requestor interface {
-	Request() *http.Request
-}
-
 type Reader interface {
-	Read(Requestor) ([]byte, error)
+	Read(*http.Request) ([]byte, error)
 }
 
 type Saver interface {
-	Save(Requestor, []byte) error
+	Save(*http.Request, []byte) error
 }
 
 type ReaderSaver interface {
@@ -43,6 +39,7 @@ type Stencil struct {
 	name     string
 	text     string
 	store    ReaderSaver
+	fm       template.FuncMap
 }
 
 func NewStencil(name string, rs ReaderSaver) *Stencil {
@@ -50,6 +47,7 @@ func NewStencil(name string, rs ReaderSaver) *Stencil {
 		name:    name,
 		store:   rs,
 		isStale: true,
+		fm:      make(map[string]interface{}),
 	}
 }
 
@@ -57,13 +55,13 @@ func fmtErr(format string, fields ...interface{}) error {
 	return errors.New(fmt.Sprintf(format, fields...))
 }
 
-func (s *Stencil) Etch(wr io.Writer, r Requestor, data interface{}) error {
+func (s *Stencil) Etch(w io.Writer, r *http.Request, data interface{}) error {
 	if s.isStale {
 		if _, err := s.Load(r); err != nil {
 			return err
 		}
 	}
-	return s.Template.Execute(wr, data)
+	return s.Template.Execute(w, data)
 }
 
 func (s *Stencil) Extend(t *Stencil) (*Stencil, error) {
@@ -78,7 +76,7 @@ func (s *Stencil) Extend(t *Stencil) (*Stencil, error) {
 	return s, nil
 }
 
-func (s *Stencil) Load(r Requestor) (*Stencil, error) {
+func (s *Stencil) Load(r *http.Request) (*Stencil, error) {
 	if s.base != nil && s.base.isStale {
 		return s.base.Load(r)
 	}
@@ -93,6 +91,11 @@ func (s *Stencil) Load(r Requestor) (*Stencil, error) {
 	s.text = string(b)
 	t := template.New(s.name)
 
+	// Add template funcs
+	if len(s.fm) > 0 {
+		t.Funcs(s.fm)
+	}
+
 	// Load full templates (traverse parents)
 	if t, err = t.Parse(data(s)); err != nil {
 		return s, err
@@ -104,7 +107,25 @@ func (s *Stencil) Load(r Requestor) (*Stencil, error) {
 	return s, Reload(r, s.children...)
 }
 
-func Reload(r Requestor, children ...*Stencil) (err error) {
+func (s *Stencil) Reload(r *http.Request) (*Stencil, error) {
+	if s.base != nil {
+		return s.base.Reload(r)
+	}
+	return s.Load(r)
+}
+
+func (s *Stencil) String() string {
+	return s.text
+}
+
+func (s *Stencil) Funcs(fm template.FuncMap) *Stencil {
+	for name, fn := range fm {
+		s.fm[name] = fn
+	}
+	return s
+}
+
+func Reload(r *http.Request, children ...*Stencil) (err error) {
 	for _, s := range children {
 		if _, e := s.Load(r); e != nil {
 			err = fmtErr("%s; [%s] - %s", err, s.name, e)
@@ -115,7 +136,7 @@ func Reload(r Requestor, children ...*Stencil) (err error) {
 
 func data(s *Stencil) string {
 	if s.base != nil {
-		return s.text + data(s.base)
+		return data(s.base) + s.text
 	}
 	return s.text
 }

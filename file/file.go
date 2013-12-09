@@ -6,6 +6,7 @@ package file
 
 import (
 	"io/ioutil"
+	"net/http"
 	"path/filepath"
 
 	"bitbucket.org/juztin/stencils"
@@ -23,10 +24,40 @@ func New(path string) stencils.StencilFn {
 	}
 }
 
-func (f *file) Read(r stencils.Requestor) ([]byte, error) {
+/*func new(path string, name string) *stencils.Stencil {
+	p := filepath.Join(path, name)
+	return stencils.NewStencil(name, &file{p, name})
+}*/
+
+func (f *file) Read(r *http.Request) ([]byte, error) {
 	return ioutil.ReadFile(f.path)
 }
 
-func (f *file) Save(r stencils.Requestor, data []byte) error {
+func (f *file) Save(r *http.Request, data []byte) error {
 	return ioutil.WriteFile(f.path, data, 0600)
 }
+
+/*func LoadAll(path string) *stencils.Stencils {
+	col := stencils.New(New(path))
+	loadAll(col, path, nil)
+	return col
+}
+
+func loadAll(col *stencils.Stencils, path string, base *stencils.Stencil) {
+	f, err := ioutil.ReadDir(path)
+	if err != nil {
+		return
+	}
+
+	for _, fi := range f {
+		if fi.IsDir() {
+			loadAll(col, fi.Name(), base)
+		}
+		t := new(path, fi.Name())
+		col.Add(t)
+		if base != nil {
+			base.Extend(t)
+		}
+	}
+
+}*/

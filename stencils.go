@@ -7,6 +7,7 @@ package stencils
 import (
 	"bytes"
 	"io"
+	"net/http"
 )
 
 type Stencils struct {
@@ -36,7 +37,7 @@ func (c *Stencils) Add(s *Stencil) *Stencils {
 	return c
 }
 
-func (c *Stencils) Etch(n string, wr io.Writer, r Requestor, data interface{}) error {
+func (c *Stencils) Etch(n string, wr io.Writer, r *http.Request, data interface{}) error {
 	if s, ok := c.Name(n); ok {
 		var buf bytes.Buffer
 		if err := s.Etch(&buf, r, data); err != nil {
@@ -45,7 +46,7 @@ func (c *Stencils) Etch(n string, wr io.Writer, r Requestor, data interface{}) e
 		_, err := buf.WriteTo(wr)
 		return err
 	}
-	return writeErr(c.FourOh, r, wr, data, fmtErr("Stencils does not exist: %s", n))
+	return writeErr(c.FiveOh, r, wr, data, fmtErr("Stencil does not exist: %s", n))
 }
 
 func (c *Stencils) Name(n string) (*Stencil, bool) {
@@ -60,7 +61,7 @@ func (c *Stencils) Remove(n string) (ok bool) {
 	return ok
 }
 
-func writeErr(s *Stencil, r Requestor, wr io.Writer, data interface{}, err error) error {
+func writeErr(s *Stencil, r *http.Request, wr io.Writer, data interface{}, err error) error {
 	if s != nil {
 		if e := s.Etch(wr, r, data); e != nil {
 			err = fmtErr("Stencil: %s : %s", err, e)
