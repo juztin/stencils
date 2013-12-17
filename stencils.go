@@ -41,12 +41,12 @@ func (c *Stencils) Etch(n string, wr io.Writer, r *http.Request, data interface{
 	if s, ok := c.Name(n); ok {
 		var buf bytes.Buffer
 		if err := s.Etch(&buf, r, data); err != nil {
-			return writeErr(c.FiveOh, r, wr, data, err)
+			return err
 		}
 		_, err := buf.WriteTo(wr)
 		return err
 	}
-	return writeErr(c.FiveOh, r, wr, data, fmtErr("Stencil does not exist: %s", n))
+	return fmtErr("Stencil does not exist: %s", n)
 }
 
 func (c *Stencils) Name(n string) (*Stencil, bool) {
@@ -59,13 +59,4 @@ func (c *Stencils) Remove(n string) (ok bool) {
 		delete(c.col, n)
 	}
 	return ok
-}
-
-func writeErr(s *Stencil, r *http.Request, wr io.Writer, data interface{}, err error) error {
-	if s != nil {
-		if e := s.Etch(wr, r, data); e != nil {
-			err = fmtErr("Stencil: %s : %s", err, e)
-		}
-	}
-	return err
 }
