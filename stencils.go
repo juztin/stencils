@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 type Stencils struct {
@@ -29,6 +30,7 @@ func New(fn StencilFn) *Stencils {
 	c := new(Stencils)
 	c.col = make(map[string]*Stencil)
 	c.create = fn
+	c.LogTo(os.Stderr)
 	return c
 }
 
@@ -69,7 +71,11 @@ func (c *Stencils) Remove(n string) (ok bool) {
 }
 
 func (c *Stencils) LogTo(w io.Writer) {
-	c.logger = log.New(w, "[stencils] ", log.LstdFlags)
+	if w == nil {
+		c.logger = nil
+	} else {
+		c.logger = log.New(w, "[stencils] ", log.LstdFlags)
+	}
 }
 
 func (c *Stencils) log(err error) {
