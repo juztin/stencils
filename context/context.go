@@ -43,16 +43,8 @@ func NotFound(ctx *Context) {
 }
 
 func (c *Context) Etch(name string, data interface{}) {
-	err := c.stencils.Etch(name, c.Resp, c.Request, data)
-	if err != nil {
-		// log
-		switch err.Status {
-		case 404:
-			c.NotFound(data)
-		case 500:
-			c.ServerError(data)
-		}
-	}
+	// log
+	c.stencils.Etch(name, c.Resp, c.Request, data)
 }
 
 func (c *Context) ServerError(data interface{}) {
