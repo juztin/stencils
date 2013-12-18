@@ -25,11 +25,11 @@ func New(collection string) stencils.StencilFn {
 	}
 }
 
-func (g *gae) Read(r stencils.Requestor) ([]byte, error) {
+func (g *gae) Read(r *http.Request) ([]byte, error) {
 	return ioutil.ReadFile(g.name)
 }
 
-func (g *gae) Save(r stencils.Requestor, data []byte) error {
+func (g *gae) Save(r *http.Request, data []byte) error {
 	c := appengine.NewContext(req)
 	k := datastore.NewKey(c, g.collection, g.name, 0, nil)
 
