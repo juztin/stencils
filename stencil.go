@@ -77,6 +77,7 @@ func (s *Stencil) Extend(t *Stencil) (*Stencil, error) {
 }
 
 func (s *Stencil) Load(r *http.Request) (*Stencil, error) {
+	// If there is a base, reload it (will reload this as part of it's children)
 	if s.base != nil && s.base.isStale {
 		return s.base.Load(r)
 	}
