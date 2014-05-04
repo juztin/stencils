@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"bitbucket.org/juztin/stencils"
+	"minty.io/stencils"
 )
 
 type file struct {

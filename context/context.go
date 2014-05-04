@@ -7,8 +7,8 @@ package context
 import (
 	"net/http"
 
-	"bitbucket.org/juztin/stencils"
-	"bitbucket.org/juztin/stencils/file"
+	"minty.io/stencils"
+	"minty.io/stencils/file"
 )
 
 var Stencils *stencils.Stencils

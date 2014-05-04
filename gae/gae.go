@@ -9,10 +9,13 @@ package gae
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+
+	"minty.io/stencils"
 
 	"appengine"
 	"appengine/datastore"
-	"bitbucket.org/juztin/stencils"
 )
 
 type gae struct {

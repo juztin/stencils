@@ -1,6 +1,6 @@
 #!/bin/sh -
 
-go install bitbucket.org/juztin/stencils
-go install bitbucket.org/juztin/stencils/file
-#go install bitbucket.org/juztin/stencils/gae
-go install bitbucket.org/juztin/stencils/context
+go install minty.io/stencils
+go install minty.io/stencils/file
+#go install minty.io/stencils/gae
+go install minty.io/stencils/context
