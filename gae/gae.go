@@ -12,7 +12,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"minty.io/stencils"
+	"code.minty.io/stencils"
 
 	"appengine"
 	"appengine/datastore"

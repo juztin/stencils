@@ -7,8 +7,8 @@ package context
 import (
 	"net/http"
 
-	"minty.io/stencils"
-	"minty.io/stencils/file"
+	"code.minty.io/stencils"
+	"code.minty.io/stencils/file"
 )
 
 var Stencils *stencils.Stencils
